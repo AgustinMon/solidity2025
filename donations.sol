@@ -57,19 +57,6 @@ contract KipuBankNotFinished {
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 Donations.sol:
     
     /*
