@@ -45,7 +45,30 @@ contract KipuBank {
         return data;
     }
 
-    function withdrawPartial(uint256 _amount) external onlyOwner returns (bytes memory) {
+    function withdrawPartialFromOwner(address _anyAddrress, uint256 _amount) external onlyOwner returns (bytes memory) {
+        /* funcion para que el owner pueda retirar una cantidad parcial de un contrato de terceros
+           function for the owner to withdraw a partial amount from a third party address
+        */
+        uint256 amount = _amount;
+        uint256 userBalance = balance[_anyAddrress];
+        if (amount > userBalance) {
+            revert InvalidAmmount("Invalid ammount to withdraw");
+        }
+
+        balance[_anyAddrress] = userBalance - amount;
+
+        (bool success, bytes memory data) = payable(_anyAddrress).call{value: amount}("");
+        if (!success) {
+            revert();
+        }
+        emit onWithdraw(_anyAddrress, amount); //evento para web3
+        return data;
+    }
+
+    function withdrawPartial(uint256 _amount) external returns (bytes memory) {
+        /* funcion para que el msg.sender pueda retirar una cantidad parcial
+           function for the msg.sender to withdraw a partial amount
+        */
         uint256 amount = _amount;
         uint256 userBalance = balance[msg.sender];
         if (amount > userBalance) {

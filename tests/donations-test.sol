@@ -32,7 +32,11 @@ contract donations{
         return data;
     }
 
-    function withdrawParcial(uint256 _ammount) external payable returns(bytes memory){
+    function withdrawParcialOwner(uint256 _ammount) external payable returns(bytes memory){
+        /* funcion cuyo objetivo es que solo el owner pueda retirar una cantidad parcial
+           function whose objective is that only the owner can withdraw a partial amount
+           EN REVISION
+        */
         address to = msg.sender;
         uint ammount = _ammount;
         if(ammount <= balance[msg.sender]){
@@ -46,6 +50,23 @@ contract donations{
         }
     }
 
+    function withdrawParcial(address _myAddress, uint256 _ammount) external payable returns(bytes memory){
+        /* funcion cuyo objetivo es que solo el owner pueda retirar una cantidad parcial
+           function whose objective is that only the owner can withdraw a partial amount
+           EN REVISION
+        */
+        address to = msg.sender;
+        uint ammount = _ammount;
+        if(ammount <= balance[msg.sender]){
+            balance[msg.sender] -= _ammount;
+            (bool success, bytes memory data) = to.call{value: ammount}("");
+            if(!success) revert();
+            return data;
+        }
+        else {
+            revert InvalidAmmount();
+        }
+    }
 
     function withdrawPartial2(uint256 amount) external returns (bytes memory) {
         uint256 userBalance = balance[msg.sender];
