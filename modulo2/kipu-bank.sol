@@ -1,9 +1,11 @@
 pragma solidity >0.8.0;
 
+//SPDX-License-Identifier: UNLICENSED
+
 contract KipuBank {
 
     address immutable public owner; //public para generar transparencia
-    uint256 private MINIMUMAMOUNT = 0.1 ether;
+    uint256 private MINIMUMAMOUNT = 0.01 ether;
 
     mapping(address=>uint256) public balance; 
     
@@ -28,7 +30,7 @@ contract KipuBank {
             Add ether to your balance, only if the amount is greater 0.1 ether 
             Agrega dinero a tu balance, solo si la cantidad es mayor a 0.1 ether
         */
-        if (msg.value != MINIMUMAMOUNT) revert InvalidMinimum("You must send exactly 0.1 ether");
+        if (msg.value < MINIMUMAMOUNT) revert InvalidMinimum("You must send at least 0.01 ether");
         balance[msg.sender] += msg.value;
         emit onPaid(msg.sender, msg.value); //evento para web3
     }
@@ -64,7 +66,7 @@ contract KipuBank {
         return balance[msg.sender];
     }
 
-    function getContractBalance() external view returns(uint256) {
+    function getTotalAllocated() external view returns(uint256) {
         /* 
             function to get the total balance of the contract
             funcion para obtener el valor total del contrato 
@@ -72,5 +74,4 @@ contract KipuBank {
         */
         return address(this).balance; 
     }
-
 }
