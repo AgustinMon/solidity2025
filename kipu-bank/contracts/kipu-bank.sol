@@ -52,7 +52,7 @@ contract KipuBank {
             revert();
         }
         emit onWithdraw(msg.sender, amount); //evento para web3
-        if(balance[msg.sender] == 0) removeAddress(msg.sender); //remove address if balance is 0
+        if(balance[msg.sender] == 0) removeBalance(msg.sender); 
         return data;
     }
 
@@ -77,7 +77,7 @@ contract KipuBank {
         (bool success, bytes memory data) = to.call{value: myBalance}("");
         if(!success) revert();
         emit onWithdraw(msg.sender, myBalance); //evento para web3
-        removeAddress(to); //remove address if balance is 0
+        removeBalance(to); 
         return data;
     }
 
@@ -98,15 +98,15 @@ contract KipuBank {
             revert();
         }
         emit onWithdraw(_anyAddrress, amount); //evento para web3
-        if(balance[_anyAddrress] == 0) removeAddress(_anyAddrress); //remove address if balance is 0
+        if(balance[_anyAddrress] == 0) removeBalance(_anyAddrress);
         return data;
     }
 
     //FUNCIONES PRIVADAS
-    function removeAddress(address _addr) private {
+    function removeBalance(address _addr) private {
         /*
-            Elimina del registro las direcciones que ya no tienen saldo
-            Removes from the record the addresses that no longer have a balance
+            pone en 0 el balance de una direccion si es 0
+            sets to 0 the balance of an address if it is 0
         */
         if(balance[_addr] == 0){
             delete balance[_addr];
