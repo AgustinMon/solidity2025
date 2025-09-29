@@ -35,6 +35,41 @@ contract KipuBank {
         emit onPaid(msg.sender, msg.value); //evento para web3
     }
 
+    function withdrawPartial(uint256 _amount) external returns (bytes memory) {
+        /* funcion para que el msg.sender pueda retirar una cantidad parcial
+           function for the msg.sender to withdraw a partial amount
+        */
+        uint256 amount = _amount;
+        uint256 userBalance = balance[msg.sender];
+        if (amount > userBalance) {
+            revert InvalidAmmount("Invalid ammount to withdraw");
+        }
+
+        balance[msg.sender] = userBalance - amount;
+
+        (bool success, bytes memory data) = payable(msg.sender).call{value: amount}("");
+        if (!success) {
+            revert();
+        }
+        emit onWithdraw(msg.sender, amount); //evento para web3
+        if(balance[msg.sender] == 0) removeAddress(msg.sender); //remove address if balance is 0
+        return data;
+    }
+
+    function getBalance() external view returns(uint256) {
+        return balance[msg.sender];
+    }
+
+    function getTotalAllocated() external view returns(uint256) {
+        /* 
+            function to get the total balance of the contract
+            funcion para obtener el valor total del contrato 
+            funcion para agregar transparencia publica
+        */
+        return address(this).balance; 
+    }
+
+    //FUNCIONES SOLO PARA EL OWNER DEL CONTRATO
     function withdrawAll() external onlyOwner returns(bytes memory) {
         address to = msg.sender;
         uint256 myBalance = balance[msg.sender];
@@ -42,6 +77,7 @@ contract KipuBank {
         (bool success, bytes memory data) = to.call{value: myBalance}("");
         if(!success) revert();
         emit onWithdraw(msg.sender, myBalance); //evento para web3
+        removeAddress(to); //remove address if balance is 0
         return data;
     }
 
@@ -62,39 +98,19 @@ contract KipuBank {
             revert();
         }
         emit onWithdraw(_anyAddrress, amount); //evento para web3
+        if(balance[_anyAddrress] == 0) removeAddress(_anyAddrress); //remove address if balance is 0
         return data;
     }
 
-    function withdrawPartial(uint256 _amount) external returns (bytes memory) {
-        /* funcion para que el msg.sender pueda retirar una cantidad parcial
-           function for the msg.sender to withdraw a partial amount
+    //FUNCIONES PRIVADAS
+    function removeAddress(address _addr) private {
+        /*
+            Elimina del registro las direcciones que ya no tienen saldo
+            Removes from the record the addresses that no longer have a balance
         */
-        uint256 amount = _amount;
-        uint256 userBalance = balance[msg.sender];
-        if (amount > userBalance) {
-            revert InvalidAmmount("Invalid ammount to withdraw");
+        if(balance[_addr] == 0){
+            delete balance[_addr];
         }
-
-        balance[msg.sender] = userBalance - amount;
-
-        (bool success, bytes memory data) = payable(msg.sender).call{value: amount}("");
-        if (!success) {
-            revert();
-        }
-        emit onWithdraw(msg.sender, amount); //evento para web3
-        return data;
     }
 
-    function getBalance() external view returns(uint256) {
-        return balance[msg.sender];
-    }
-
-    function getTotalAllocated() external view returns(uint256) {
-        /* 
-            function to get the total balance of the contract
-            funcion para obtener el valor total del contrato 
-            funcion para agregar transparencia publica
-        */
-        return address(this).balance; 
-    }
 }
