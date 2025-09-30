@@ -22,7 +22,7 @@ contract KipuBank {
     }
 
     constructor() {
-        owner = msg.sender;
+        owner = msg.sender; //el valor de owner queda determinado en el deploy
     }
 
     function addAmmount() external payable {
@@ -52,7 +52,6 @@ contract KipuBank {
             revert();
         }
         emit onWithdraw(msg.sender, amount); //evento para web3
-        if(balance[msg.sender] == 0) removeBalance(msg.sender); 
         return data;
     }
 
@@ -73,11 +72,10 @@ contract KipuBank {
     function withdrawAll() external onlyOwner returns(bytes memory) {
         address to = msg.sender;
         uint256 myBalance = balance[msg.sender];
-        balance[msg.sender] = 0;
+        removeBalance(); 
         (bool success, bytes memory data) = to.call{value: myBalance}("");
         if(!success) revert();
         emit onWithdraw(msg.sender, myBalance); //evento para web3
-        removeBalance(to); 
         return data;
     }
 
@@ -98,19 +96,16 @@ contract KipuBank {
             revert();
         }
         emit onWithdraw(_anyAddrress, amount); //evento para web3
-        if(balance[_anyAddrress] == 0) removeBalance(_anyAddrress);
         return data;
     }
 
     //FUNCIONES PRIVADAS
-    function removeBalance(address _addr) private {
+    function removeBalance() private {
         /*
             pone en 0 el balance de una direccion si es 0
             sets to 0 the balance of an address if it is 0
         */
-        if(balance[_addr] == 0){
-            delete balance[_addr];
-        }
+        balance[msg.sender] = 0;
     }
 
 }
