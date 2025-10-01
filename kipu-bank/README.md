@@ -12,10 +12,10 @@ Se pueden agregar tokens, retirar total o parcialmente la cantidad depositada.
 4. Compilar código. En este caso se compila con la versión 0.8.30 + commit.73712a01
 5. Una vez compilado se obtendrá la dirección del contrato. En este caso es:
 6. Para verificar el contrato hay que dirigirse a la web de sepolia https://sepolia.etherscan.io/
-- Buscar en el buscador de contratos el nuestro.
-- Dirigirse a Contract y pegar el codigo del contrato y contestar las preguntas de verificación (versión de compilación, ...)
-- Pegar el ABI que se ha descargado.
-- Si todos los datos son correctos, el contrato quedará verificado con una tilde.
+    - Buscar en el buscador de contratos el nuestro.
+    - Dirigirse a Contract y pegar el codigo del contrato y contestar las preguntas de verificación (versión de compilación, ...)
+    - Pegar el ABI que se ha descargado.
+    - Si todos los datos son correctos, el contrato quedará verificado con una tilde.
 
 ## Cómo interactuar con el contrato.
 **Se crearon varias funciones para interactuar con el contrato, algunas exclusivas del owner y otras no.**
