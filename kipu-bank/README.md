@@ -9,7 +9,7 @@ Se pueden agregar tokens, retirar total o parcialmente la cantidad depositada.
 1. Se desplegará en Sepolia.
 2. Subir código a Remix.
 3. Conectar billetera Metamask para pagar el costo de la publicación.
-4. Compilar código. En este caso se compila con la versión 0.8.30 + commit.73712a01
+4. Compilar código. En este caso se compila con la versión **0.8.30 + commit.73712a01**
 5. Una vez compilado se obtendrá la dirección del contrato. En este caso es:
 6. Para verificar el contrato hay que dirigirse a la web de sepolia https://sepolia.etherscan.io/
     - Buscar en el buscador de contratos el nuestro.
