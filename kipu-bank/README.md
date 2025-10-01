@@ -18,7 +18,7 @@ Se pueden agregar tokens, retirar total o parcialmente la cantidad depositada.
 - Si todos los datos son correctos, el contrato quedará verificado con una tilde.
 
 ## Cómo interactuar con el contrato.
-** Se crearon varias funciones para interactuar con el contrato, algunas exclusivas del owner y otras no.
+**Se crearon varias funciones para interactuar con el contrato, algunas exclusivas del owner y otras no.**
 ### Funciones exclusivas del owner:
 Estas funciones se crearon para agregar seguridad al contrato aunque podría discutirse si es o no apropiado para cualquier caso.
    - función **withdrawAl**: Permite al owner del contrsto retirar el monto total en el balance de una dirección.
