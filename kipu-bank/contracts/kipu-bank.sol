@@ -1,6 +1,6 @@
+//SPDX-License-Identifier: UNLICENSED
 pragma solidity >0.8.0;
 
-//SPDX-License-Identifier: UNLICENSED
 
 contract KipuBank {
 
@@ -17,7 +17,7 @@ contract KipuBank {
     event onWithdraw(address indexed withdrawer, uint256 amount);
 
     modifier onlyOwner() {
-        if(msg.sender != owner) revert Unauthorized("You are not the owner");
+        if(msg.sender != owner) revert Unauthorized("You are not the owner of the contract.");
         _;
     }
 
@@ -36,8 +36,9 @@ contract KipuBank {
     }
 
     function withdrawPartial(uint256 _amount) external returns (bytes memory) {
-        /* funcion para que el msg.sender pueda retirar una cantidad parcial
-           function for the msg.sender to withdraw a partial amount
+        /* 
+        funcion para que el msg.sender pueda retirar una cantidad parcial
+        function for the msg.sender to withdraw a partial amount
         */
         uint256 amount = _amount;
         uint256 userBalance = balance[msg.sender];
@@ -45,7 +46,7 @@ contract KipuBank {
             revert InvalidAmmount("Invalid ammount to withdraw");
         }
 
-        balance[msg.sender] = userBalance - amount;
+        balance[msg.sender] = _removeBalance(userBalance,amount);
 
         (bool success, bytes memory data) = payable(msg.sender).call{value: amount}("");
         if (!success) {
@@ -69,43 +70,54 @@ contract KipuBank {
     }
 
     //FUNCIONES SOLO PARA EL OWNER DEL CONTRATO
-    function withdrawAll() external onlyOwner returns(bytes memory) {
-        address to = msg.sender;
-        uint256 myBalance = balance[msg.sender];
-        removeBalance(); 
-        (bool success, bytes memory data) = to.call{value: myBalance}("");
+    function withdrawAll(address _anyAddrress) external onlyOwner returns(bytes memory) {
+        /* 
+            Funcion para que el owner pueda retirar todo el balance de un contrato de terceros
+            Function for the owner to withdraw all the balance from a third party address
+            arguments: _anyAddrress = direccion del contrato de terceros
+        */
+        address to = _anyAddrress;
+        uint256 userBalance =_removeBalance(balance[_anyAddrress],balance[_anyAddrress]);
+        (bool success, bytes memory data) = to.call{value: userBalance}("");
         if(!success) revert();
-        emit onWithdraw(msg.sender, myBalance); //evento para web3
+        emit onWithdraw(msg.sender, userBalance); //evento para web3
         return data;
     }
 
-    function withdrawPartialFromOwner(address _anyAddrress, uint256 _amount) external onlyOwner returns (bytes memory) {
-        /* funcion para que el owner pueda retirar una cantidad parcial de un contrato de terceros
-           function for the owner to withdraw a partial amount from a third party address
+    function withdrawPartialFromOwner(address _anyAddress, uint256 _amount) external onlyOwner returns (bytes memory) {
+        /* 
+            Funcion para que el owner pueda retirar una cantidad parcial de un contrato de terceros
+            Function for the owner to withdraw a partial amount from a third party address
+            arguments: _anyAddress = direccion del contrato de terceros
+                       _amount = cantidad a retirar
         */
         uint256 amount = _amount;
-        uint256 userBalance = balance[_anyAddrress];
+        uint256 userBalance = _removeBalance(balance[_anyAddress],balance[_anyAddress]);
         if (amount > userBalance) {
             revert InvalidAmmount("Invalid ammount to withdraw");
         }
 
-        balance[_anyAddrress] = userBalance - amount;
+        balance[_anyAddress] = _removeBalance(userBalance, amount);
 
-        (bool success, bytes memory data) = payable(_anyAddrress).call{value: amount}("");
+        (bool success, bytes memory data) = payable(_anyAddress).call{value: amount}("");
         if (!success) {
             revert();
         }
-        emit onWithdraw(_anyAddrress, amount); //evento para web3
+        emit onWithdraw(_anyAddress, amount); //evento para web3
         return data;
     }
 
     //FUNCIONES PRIVADAS
-    function removeBalance() private {
+    function _removeBalance(uint256 _actualBalance, uint256 _amountToReduce) private pure returns (uint256) {
         /*
-            pone en 0 el balance de una direccion si es 0
-            sets to 0 the balance of an address if it is 0
+            Reduce el balanace de una direccion en una cantidad determinada
+            Independientemente de si consume más gas, se decidió crear esta función para separar trabajos.
+            Reduces the balance of an address by a determined amount
+            Regardless of whether it consumes more gas, it was decided to create this function to separate tasks
+            arguments: _actualBalance = balance actual de la direccion
+                       _amountToReduce = cantidad a reducir
         */
-        balance[msg.sender] = 0;
+        return _actualBalance - _amountToReduce;
     }
 
 }
