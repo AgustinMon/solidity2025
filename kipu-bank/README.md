@@ -21,17 +21,17 @@ Se pueden agregar tokens, retirar total o parcialmente la cantidad depositada.
 **Se crearon varias funciones para interactuar con el contrato, algunas exclusivas del owner y otras no.**
 ### Funciones exclusivas del owner:
 Estas funciones se crearon para agregar seguridad al contrato aunque podría discutirse si es o no apropiado para cualquier caso.
-   - función **withdrawAl**: Permite al owner del contrsto retirar el monto total en el balance de una dirección.
+   - función **withdrawAll**: Permite al owner del contrsto retirar el monto total en el balance de una dirección.
    - functión **withdrawPartialFromOwner**: permite al owner retirar una cantidad concreta de un contrato de terceros. 
 
-### Funciones publicas para interactuar:
+### Funciones públicas para interactuar:
    - función **addAmount**, agrega el valor enviado al contrato siempre que éste sea mayor a 0.01 ETH.  
    - función **withdrawPartial**: permite especificar el monto a retirar.  
    - función **getBalance**: permite obtener el balance de una dirección determinada (la propia).  
    - función **getTotalAllocated**: permite obtener el monto total del banco (a efectos de transparencia pública).  
 
 ### Funciones privadas:
-   - función **removeBalance**: Creada para separar trabajos.
+   - función **_removeBalance**: Creada para separar trabajos.
 
 ## Contrato:
 https://sepolia.etherscan.io/address/0xa888f7d220196b0a05afc94496821ec65cc18b72#code
