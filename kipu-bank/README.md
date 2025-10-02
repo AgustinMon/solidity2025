@@ -35,5 +35,5 @@ Estas funciones se crearon para agregar seguridad al contrato aunque podría dis
    - función **_removeBalance**: Creada para separar trabajos.
 
 ## Contrato:
-https://sepolia.etherscan.io/address/0xa888f7d220196b0a05afc94496821ec65cc18b72#code
+https://sepolia.etherscan.io/address/0xfe4d43639a338d046c98d2452b71eec7a3696837
 
