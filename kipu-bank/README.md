@@ -3,7 +3,8 @@
 ## Descripción de lo que hace el contrato. 
 Ejercicio del módulo 2 del curso de Solidity
 Se crea un kipu-bank en el que se pueden estudiar las transacciones de ingreso, salida y consulta de balance.  
-Se pueden agregar tokens, retirar total o parcialmente la cantidad depositada.  
+Se pueden agregar tokens, retirar total o parcialmente la cantidad depositada.
+Se crearon algunas funciones exclusivas del owner para hacer withdraw en casos de emergencia y otras con las que el usuario podrá interactuar ingresando, retirando y consultando balance.
 
 ## Instrucciones de despliegue.
 1. Se desplegará en Sepolia.
@@ -19,7 +20,7 @@ Se pueden agregar tokens, retirar total o parcialmente la cantidad depositada.
     - Si todos los datos son correctos, el contrato quedará verificado con una tilde y aparecerá el Contract ABI en la página de confirmación.
 
 ## Cómo interactuar con el contrato.
-**Se crearon varias funciones para interactuar con el contrato, algunas exclusivas del owner y otras no.**
+**Se crearon varias funciones para interactuar con el contrato, algunas exclusivas del owner y otras no. Monto mínimo para ingresar 0.01 ETH**
 ### Funciones exclusivas del owner:
 Estas funciones se crearon para agregar seguridad al contrato aunque podría discutirse si es o no apropiado para cualquier caso.
    - función **withdrawAll**: Permite al owner del contrsto retirar el monto total en el balance de una dirección.
