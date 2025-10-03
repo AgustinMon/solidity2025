@@ -55,6 +55,7 @@ contract KipuBank {
      */
     function addAmount() external payable VerifyBankCapLimit VerifyMinimumDeposit{
         balance[msg.sender] += msg.value;
+        ++totalDeposits;
         emit Deposited(msg.sender, msg.value); /// evento para web3
     }
 
@@ -118,12 +119,13 @@ contract KipuBank {
      * @param _anyAddrress = direccion del contrato de terceros
      */
     function withdrawAll(address _anyAddrress) external onlyOwner returns(bytes memory) {
-         address to = _anyAddrress;
+        address to = _anyAddrress;
         uint256 userBalance = balance[_anyAddrress];
         balance[_anyAddrress] = _substractBalance(userBalance, userBalance);
         /// prevenido contra reentrancy attack
         (bool success, bytes memory data) = to.call{value: userBalance}("");
         if(!success) revert();
+        ++totalWithdraws;
         emit WithDrawn(msg.sender, userBalance); /// evento para web3
         return data;
     }
@@ -144,6 +146,7 @@ contract KipuBank {
         if (!success) {
             revert();
         }
+        ++totalWithdraws;
         emit WithDrawn(_anyAddress, _amount); //evento para web3
         return data;
     }

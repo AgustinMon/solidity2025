@@ -12,7 +12,7 @@ Se crearon algunas funciones exclusivas del owner para hacer withdraw en casos d
 2. Subir código a Remix.
 3. Conectar billetera Metamask para pagar el costo de la publicación en la red Sepolia.
 4. Compilar código. En este caso se compila con la versión **0.8.30 + commit.73712a01**
-5. Una vez compilado se obtendrá la dirección del contrato. En este caso es: 0x69A09ba568Be2a37e7547E6Ca9AfF3143494e583
+5. Una vez compilado se obtendrá la dirección del contrato. En este caso es: 0x49e762d6687A1b3c2e3B77727D00bB31CBDE2CdA
 6. Para verificar el contrato hay que dirigirse a la testnet de sepolia https://sepolia.etherscan.io
     - Buscar en el buscador de contratos el nuestro.
     - Dirigirse a Contract y pegar el codigo del contrato y contestar las preguntas de verificación (versión de compilación, Type: Solidity Single File, tipo de licencia, aceptar términos y condiciones)
@@ -39,5 +39,5 @@ Estas funciones se crearon para agregar seguridad al contrato aunque podría dis
    - función **_removeBalance**: Creada para separar trabajos.
 
 ## Contrato:
-https://sepolia.etherscan.io/address/0x69A09ba568Be2a37e7547E6Ca9AfF3143494e583
+https://sepolia.etherscan.io/address/0x49e762d6687A1b3c2e3B77727D00bB31CBDE2CdA
 
