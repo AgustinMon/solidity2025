@@ -23,12 +23,18 @@ contract Ico {
     }
 
     function buyTokens() public payable {
+
+        uint256 tokenAmount = msg.value / rate;
+
         require(msg.value > 0, "Send ETH to buy tokens");
         require(token.balanceOf(address(this)) >= tokenAmount, "Not enough tokens in ICO contract");
 
-        uint256 tokenAmount = msg.value / rate;
         token.transfer(msg.sender, tokenAmount);
         emit TokenBought(msg.sender, msg.value, tokenAmount);
+    }
+
+    function getTokenContractBalance() public view returns (uint256) {
+        return token.balanceOf(address(this));
     }
 
     function sellTokens(uint256 tokenAmount) public {
@@ -40,10 +46,9 @@ contract Ico {
         require(address(this).balance >= etherAmount, "Not enough ETH in ICO contract");
 
         token.transferFrom(msg.sender, address(this), tokenAmount);
-        (bool success,)= msg.sender.call{value:ethAmount}("");
+        (bool success,)= msg.sender.call{value:etherAmount}("");
         if (!success) revert TransferFailed();
-        emit TokenSold(msg.sender, ethAmount);
+        emit TokenSold(msg.sender, tokenAmount, etherAmount);
     }
 
-    function endIco() public; //implement pausable
 }

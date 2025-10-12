@@ -1,37 +1,40 @@
 // SPDX-License-Identifier: MIT
 pragma solidity > 0.8.0;
-import @openzeppelin/contracts/token/ERC20/ERC20.sol;
-import @openzeppelin/contracts/access/Ownable.sol;
 
-implementation IPermissions {
-    function hasPermission(address user) internal view returns (bool);
+import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
+
+interface IPermissions {
+    function hasPermission(address user) external view returns (bool);
 }
 
-contract Token is ERC20, Ownable {
+contract Token is ERC20 {
+
+    error NoPermission(address user);
 
     IPermissions public permisions;
 
     constructor(IPermissions Permisions) ERC20("Modulo3", "M3") {
         permisions = Permisions;      
-        mint(address(this), 10000);
+        mint(10000);
     }
 
-    function mint(address to, uint256 amount) private onlyOwner {
+    function mint(uint256 amount) private {
         if(!permisions.hasPermission(msg.sender)) revert("No tienes permisos para desplegar este contrato");
-        super.mint(msg.sender, amount * (10 ** decimals()));
+        super._mint(msg.sender, amount * (10 ** decimals()));
     }
 
     function transfer(address to, uint256 value) public override  returns (bool) {
-        if (!permisos.hasPermision(to)) revert NoPermission(to);
+        if (!permisions.hasPermission(to)) revert NoPermission(to);
         return super.transfer(to,value);
     }
 
     function transferFrom(address from, address to, uint256 value) public override returns (bool) {
-        if (!permisos.hasPermision(to)) revert NoPermission(to);
+        if (!permisions.hasPermission(to)) revert NoPermission(to);
         return super.transferFrom(from,to,value);
     }
 
-    function burn(address from, uint256 amount) public onlyOwner {
-        super.burn(from, amount);
+    function burn(address from, uint256 amount) public {
+        super._burn(from, amount);
     }
 }
