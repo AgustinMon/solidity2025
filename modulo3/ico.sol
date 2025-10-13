@@ -1,54 +1,71 @@
-// SPDX-License-Identifier: SEE LICENSE IN LICENSE 
-pragma solidity > 0.8.0;
+// SPDX-License-Identifier: MIT
+pragma solidity >0.8.0;
 
 import "./token.sol";
 
+interface myOracle {
+    function getTokenPrice() external view returns (uint256);
+    function getEthPrice() external view returns (uint256);
+}
+
 contract Ico {
+    event TokensSold(address indexed buyer, uint256 ethPaid, uint256 tokensReceived);
+    event TokensBought(address indexed seller, uint256 tokensSold, uint256 ethReturned);
 
-    error TransferFailed();
-    error NoPermission(address user);
+    error NotEnoughTokens();
+    error AmountIsZero();
 
-    event TokenBought(address buyer, uint256 amountOfETH, uint256 amountOfTokens);
-    event TokenSold(address seller, uint256 amountOfTokens, uint256 amountOfETH);
-    
-    Token public token;
-    address public owner;
-    uint256 public rate; // Number of tokens per ether
+    myOracle public immutable oracle;
+    Token public immutable token;
 
-    constructor(Token _token, uint256 _rate) {
+    constructor(Token _token, myOracle _oracle) {
+        oracle = _oracle;
         token = _token;
-        owner = msg.sender;
-        rate = _rate;
-
     }
 
-    function buyTokens() public payable {
+    /**
+     * 🟢 Comprar tokens (pagando en ETH)
+     */
+    function buyTokens() external payable {
+        if (msg.value == 0) revert AmountIsZero();
 
-        uint256 tokenAmount = msg.value / rate;
+        uint256 tokenPrice = oracle.getTokenPrice(); 
+        uint256 ethPrice = oracle.getEthPrice();     
 
-        require(msg.value > 0, "Send ETH to buy tokens");
-        require(token.balanceOf(address(this)) >= tokenAmount, "Not enough tokens in ICO contract");
+        // tokens = (ETH enviado * precio ETH) / precio token
+        uint256 tokensToBuy = (msg.value * ethPrice) / tokenPrice;
 
-        token.transfer(msg.sender, tokenAmount);
-        emit TokenBought(msg.sender, msg.value, tokenAmount);
+        // transferir tokens desde el contrato ICO hacia el comprador
+        if (token.balanceOf(address(this)) < tokensToBuy) revert NotEnoughTokens();
+
+        token.transfer(msg.sender, tokensToBuy);
+
+        emit TokensBought(msg.sender, tokensToBuy, msg.value);
     }
 
-    function getTokenContractBalance() public view returns (uint256) {
-        return token.balanceOf(address(this));
+    /**
+     * 🔴 Vender tokens (recibir ETH a cambio)
+     */
+    function sellTokens(uint256 tokenAmount) external {
+        if (tokenAmount == 0) revert AmountIsZero();
+
+        uint256 tokenPrice = oracle.getTokenPrice();
+        uint256 ethPrice = oracle.getEthPrice();
+
+        // ETH equivalente menos 2% de comisión
+        uint256 ethToSend = ((tokenAmount * tokenPrice) / ethPrice) * 98 / 100;
+
+        // Transfiere tokens del usuario al contrato
+        bool success = token.transferFrom(msg.sender, address(this), tokenAmount);
+        require(success, "TransferFrom failed");
+
+        // Envía ETH al vendedor
+        (bool sent, ) = msg.sender.call{value: ethToSend}("");
+        require(sent, "ETH transfer failed");
+
+        emit TokensSold(msg.sender, ethToSend, tokenAmount);
     }
 
-    function sellTokens(uint256 tokenAmount) public {
- 
-        require(tokenAmount > 0, "Specify an amount of tokens to sell");
-        require(token.balanceOf(msg.sender) >= tokenAmount, "You do not have enough tokens");
-
-        uint256 etherAmount = (tokenAmount * rate * 98) / 100; // 2% fee
-        require(address(this).balance >= etherAmount, "Not enough ETH in ICO contract");
-
-        token.transferFrom(msg.sender, address(this), tokenAmount);
-        (bool success,)= msg.sender.call{value:etherAmount}("");
-        if (!success) revert TransferFailed();
-        emit TokenSold(msg.sender, tokenAmount, etherAmount);
-    }
-
+    // Permitir que el contrato reciba ETH
+    receive() external payable {}
 }

@@ -1,19 +1,16 @@
-// SPDX-License-Identifier: SEE LICENSE IN LICENSE
-pragma solidity > 0.8.0;
+// SPDX-License-Identifier: MIT
+pragma solidity >0.8.0;
 
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
-contract Permisions is Ownable {
+contract Permissions is Ownable{
+
     IERC20 public token;
-    address public ICO;
-    mapping (address => bool) public blackList;
+    mapping(address => bool) blackList;
 
-    constructor() Ownable(msg.sender) {}
-
-    function hasPermission(address user) public view returns (bool) {
-        // bug en la logica
-        return !blackList[user] || user == owner();
+    constructor() Ownable(msg.sender){
+        //token = address(this);
     }
 
     function addToBlackList(address user) public onlyOwner {
@@ -24,7 +21,13 @@ contract Permisions is Ownable {
         blackList[user] = false;
     }
 
-    function hasLessThan1000Tokens(address user) public view returns (bool) {
-        return token.balanceOf(user) < 1000 * 10 ** 18;
+    function hasMoreThan1000Tokens(address user) public returns(bool) {
+       return token.balanceOf(user) < 1000 * 10 ** 18;
+       return false;
     }
+
+    function hasPermission(address user) public returns(bool){
+        return !blackList[user] || user == owner();
+    }
+
 }
