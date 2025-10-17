@@ -19,26 +19,22 @@ contract KipuBank {
 
     mapping(address=>uint256) public balance; 
     
-    error InvalidMinimum(string errorMessage);
-    error Unauthorized(string errorMessage);
-    error InvalidAmount(string errorMessage);
-    error ExceededGlobalLimit(string errorMessage);
+    error InvalidMinimum(string errorMessage);///Invalid minimum deposit
+    error NotTheOwner(); /// Not the owner of the contract
+    error InvalidAmountToWothdraw(); ///Invalid amount to withdraw
+    error ExceededGlobalLimit(); ///Exceded global deposit limit
+    error TransferFailed(); /// Transfer failed
 
     event Deposited(address indexed  payer, uint256 amount);
     event WithDrawn(address indexed withdrawer, uint256 amount);
 
     modifier onlyOwner() {
-        if(msg.sender != owner) revert Unauthorized("You are not the owner of the contract.");
+        if(msg.sender != owner) revert NotTheOwner();
         _;
     }
 
     modifier VerifyBankCapLimit() {
-        if (address(this).balance > BANKCAPLIMIT) revert ExceededGlobalLimit("Exceeded global deposit limit.");
-        _;
-    }
 
-    modifier VerifyMinimumDeposit() {
-        if (msg.value < MINIMUMDEPOSITAMOUNT) revert InvalidMinimum("You must send at least 0.01 ether");
         _;
     }
 
@@ -53,10 +49,11 @@ contract KipuBank {
      * @notice Add ether to your balance, only if the amount is greater 0.1 ether 
      * @notice Agrega dinero a tu balance, solo si la cantidad es mayor a 0.1 ether
      */
-    function addAmount() external payable VerifyBankCapLimit VerifyMinimumDeposit{
-        balance[msg.sender] += msg.value;
+    function addAmount() external payable VerifyMinimumDeposit{
+        address sender = msg.sender;
+        if ((balance[sender] += msg.value) > BANKCAPLIMIT) revert ExceededGlobalLimit();
         ++totalDeposits;
-        emit Deposited(msg.sender, msg.value); /// evento para web3
+        emit Deposited(sender, msg.value); /// evento para web3
     }
 
     /** 
@@ -71,7 +68,7 @@ contract KipuBank {
         /// prevenido contra reentrancy attack
         (bool success, bytes memory data) = payable(msg.sender).call{value: amount}("");
         if (!success) {
-            revert();
+            revert TransferFailed();
         }
         ++totalWithdraws;
         emit WithDrawn(msg.sender, amount); /// evento para web3
@@ -162,9 +159,11 @@ contract KipuBank {
     * @dev Solo el owner puede retirar más de MAXIMUMTOWITHDRAW
     */
     function _substractBalance(uint256 _actualBalance, uint256 _amountToReduce) private view returns (uint256) {
-        if (_actualBalance == 0) revert InvalidAmount("No balance to withdraw");
-        if (_amountToReduce > _actualBalance) revert InvalidAmount("Invalid amount to withdraw");
-        if (_amountToReduce > MAXIMUMTOWITHDRAW && msg.sender != owner) revert InvalidAmount("Invalid amount to withdraw.");
-        return _actualBalance - _amountToReduce;
+        if (_actualBalance == 0) revert InvalidAmountToWothdraw();
+        if (_amountToReduce > _actualBalance) revert InvalidAmountToWothdraw();
+        if (_amountToReduce > MAXIMUMTOWITHDRAW && msg.sender != owner) revert InvalidAmountToWothdraw();
+        return unchecked {
+            _actualBalance - _amountToReduce
+        };
     }
 }
