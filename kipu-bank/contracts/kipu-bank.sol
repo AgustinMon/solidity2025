@@ -12,14 +12,14 @@ contract KipuBank {
 
     address immutable public owner; /// public para generar transparencia
     uint256 immutable MAXIMUMTOWITHDRAW; /// cantidad maxima para retirar en una sola transaccion
-    uint256 immutable BANKCAPLIMIT; /// cantidad maxima global de depositos en el contrato
+    uint256 immutable BANKCAP; /// cantidad maxima global de depositos en el contrato
     uint256 public constant MINIMUMDEPOSITAMOUNT = 0.01 ether; /// cantidad minima para depositar
     uint256 public totalDeposits = 0; /// variable para llevar el control de los depositos globales
     uint256 public totalWithdraws = 0; /// variable para llevar el control de los retiros globales
 
     mapping(address=>uint256) public balance; 
     
-    error InvalidMinimum(string errorMessage);///Invalid minimum deposit
+    error InvalidMinimum();///Invalid minimum deposit
     error NotTheOwner(); /// Not the owner of the contract
     error InvalidAmountToWothdraw(); ///Invalid amount to withdraw
     error ExceededGlobalLimit(); ///Exceded global deposit limit
@@ -33,8 +33,8 @@ contract KipuBank {
         _;
     }
 
-    modifier VerifyBankCapLimit() {
-
+    modifier VerifyMinimumDeposit() {
+        if(msg.value < MINIMUMDEPOSITAMOUNT) revert InvalidMinimum();
         _;
     }
 
@@ -42,7 +42,7 @@ contract KipuBank {
     constructor(uint256 _globalDepositLimit) {
         owner = msg.sender; 
         MAXIMUMTOWITHDRAW = 0.01 ether; 
-        BANKCAPLIMIT = _globalDepositLimit; 
+        BANKCAP = _globalDepositLimit; 
     }
 
     /**
@@ -51,7 +51,7 @@ contract KipuBank {
      */
     function addAmount() external payable VerifyMinimumDeposit{
         address sender = msg.sender;
-        if ((balance[sender] += msg.value) > BANKCAPLIMIT) revert ExceededGlobalLimit();
+        if ((balance[sender] += msg.value) > BANKCAP) revert ExceededGlobalLimit();
         ++totalDeposits;
         emit Deposited(sender, msg.value); /// evento para web3
     }
