@@ -23,7 +23,7 @@ contract Donations {
     event FeedSet(address oracle, uint256 timestamp);
 
     constructor(Oracle _oracle, IERC20 _usdc) GreatInvestor(msg.sender){//greatinvestor recibe initialowner
-        if(address(_oracle) == address(0) || address(_usdc) == address(0)) revert invalidContract;
+        if(address(_oracle) == address(0) || address(_usdc) == address(0)) revert invalidContract();
         USDC = _usdc;
         datafeed = _oracle;
         emit FeedSet(address(_oracle), block.timestamp);

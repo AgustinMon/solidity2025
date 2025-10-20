@@ -2,7 +2,7 @@
 
 ## Descripción de lo que hace el contrato. 
 Ejercicio del módulo 2 del curso de Solidity
-Se crea un contrato KipuBank.sol en el que se pueden estudiar las transacciones de ingreso, salida y consulta de balance.  
+Se crea un kipu-bank en el que se pueden estudiar las transacciones de ingreso, salida y consulta de balance.  
 Se pueden agregar tokens, retirar total o parcialmente la cantidad depositada.
 Se crearon algunas funciones exclusivas del owner para hacer withdraw en casos de emergencia y otras con las que el usuario podrá interactuar ingresando, retirando y consultando balance (Monto mínimo para ingresar 0.01 ETH).
 **Durante el despliegue del contrato se setea una variable inmutable que determinará la cantidad máxima que el banco podrá tener depositado. En este contrato se determinó el máximo balance en 10 eth.**
@@ -12,7 +12,7 @@ Se crearon algunas funciones exclusivas del owner para hacer withdraw en casos d
 2. Subir código a Remix.
 3. Conectar billetera Metamask para pagar el costo de la publicación en la red Sepolia.
 4. Compilar código. En este caso se compila con la versión **0.8.30 + commit.73712a01**
-5. Una vez compilado se obtendrá la dirección del contrato. En este caso es: 0x7E7153CF92f417071835e6f049621D01Eae2Be28
+5. Una vez compilado se obtendrá la dirección del contrato. En este caso es: 0x49e762d6687A1b3c2e3B77727D00bB31CBDE2CdA
 6. Para verificar el contrato hay que dirigirse a la testnet de sepolia https://sepolia.etherscan.io
     - Buscar en el buscador de contratos el nuestro.
     - Dirigirse a Contract y pegar el codigo del contrato y contestar las preguntas de verificación (versión de compilación, Type: Solidity Single File, tipo de licencia, aceptar términos y condiciones)
@@ -27,7 +27,7 @@ Se crearon algunas funciones exclusivas del owner para hacer withdraw en casos d
 ### Funciones exclusivas del owner:
 Estas funciones se crearon para agregar seguridad al contrato aunque podría discutirse si es o no apropiado para cualquier caso.
    - función **withdrawAll**: Permite al owner del contrsto retirar el monto total en el balance de una dirección.
-   - función **withdrawPartialFromOwner**: permite al owner retirar una cantidad concreta de un contrato de terceros. 
+   - functión **withdrawPartialFromOwner**: permite al owner retirar una cantidad concreta de un contrato de terceros. 
 
 ### Funciones públicas para interactuar:
    - función **addAmount**, agrega el valor enviado al contrato siempre que éste sea mayor a 0.01 ETH.  
@@ -39,5 +39,5 @@ Estas funciones se crearon para agregar seguridad al contrato aunque podría dis
    - función **_removeBalance**: Creada para separar trabajos.
 
 ## Contrato:
-https://sepolia.etherscan.io/address/0x7E7153CF92f417071835e6f049621D01Eae2Be28
+https://sepolia.etherscan.io/address/0x49e762d6687A1b3c2e3B77727D00bB31CBDE2CdA
 
